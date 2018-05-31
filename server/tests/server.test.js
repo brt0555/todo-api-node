@@ -263,8 +263,8 @@ describe('POST /users', () => {
         .send({email, password})
         .expect(200)
         .expect(res => {
-            // expect(res.headers['x-auth']).toBeTruthy();
-            // expect(res.body._id).toBeTruthy();
+            expect(res.headers['x-auth']).toBeTruthy();
+            expect(res.body._id).toBeTruthy();
             expect(res.body.email).toBe(email);
         })
         .end((err) => {
@@ -272,12 +272,11 @@ describe('POST /users', () => {
                 return done(err);
             }
 
-            // User.findOne({email}).then(user => {
-            //      expect(user).toExist();
-            //     expect(user.password).toNotBe(password);
-            //     done();
-            // }).catch(e => done(e));
-            done();
+            User.findOne({email}).then(user => {
+                 expect(user).toBeTruthy();
+                expect(user.password).not.toBe(password);
+                done();
+            }).catch(e => done(e));
         });
     });
 
@@ -311,7 +310,7 @@ describe('POST /users/login' , () => {
         .send({email: users[1].email, password: users[1].password})
         .expect(200)
         .expect(res => {
-            expect(res.headers['x-auth']).toBeDefined();
+            expect(res.headers['x-auth']).toBeTruthy();
         })
         .end((err, res) => {
             if(err) {
@@ -334,7 +333,7 @@ describe('POST /users/login' , () => {
         .send({email: users[1].email, password: '123abc'})
         .expect(400)
         .expect(res => {
-            expect(res.headers['x-auth']).toBeUndefined();
+            expect(res.headers['x-auth']).toBeFalsy();
         })
         .end((err, res) => {
             if(err) {
